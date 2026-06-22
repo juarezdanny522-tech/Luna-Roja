@@ -1384,10 +1384,122 @@
     showToast(`🌙 ¡Bienvenido ${state.userName || 'Dani travieso'}!`);
   }
 
+  // ===== Banner de instalación (PWA) =====
+  let deferredInstallPrompt = null;
+  const INSTALL_DISMISSED_KEY = 'lunaRoja_installDismissed';
+
+  function isAppInstalled() {
+    return window.matchMedia('(display-mode: standalone)').matches ||
+           window.navigator.standalone === true ||
+           document.referrer.includes('android-app://');
+  }
+
+  function showInstallBanner() {
+    if (isAppInstalled()) return;
+    if (localStorage.getItem(INSTALL_DISMISSED_KEY) === 'true') return;
+    const banner = document.getElementById('installBanner');
+    if (banner) {
+      banner.classList.remove('hidden');
+    }
+  }
+
+  function hideInstallBanner() {
+    const banner = document.getElementById('installBanner');
+    if (banner) {
+      banner.classList.add('hidden');
+    }
+  }
+
+  async function handleInstallClick() {
+    if (deferredInstallPrompt) {
+      try {
+        deferredInstallPrompt.prompt();
+        const choiceResult = await deferredInstallPrompt.userChoice;
+        if (choiceResult.outcome === 'accepted') {
+          hideInstallBanner();
+          showToast('🎉 ¡Luna Roja instalada en tu pantalla!');
+        }
+        deferredInstallPrompt = null;
+      } catch (err) {
+        console.error('Error en instalación:', err);
+        showIOSInstructions();
+      }
+    } else {
+      // Sin beforeinstallprompt (iOS o navegador no compatible)
+      showIOSInstructions();
+    }
+  }
+
+  function showIOSInstructions() {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    if (isIOS) {
+      showModal({
+        title: '📲 Instalar en tu iPhone',
+        message: '1. Toca el botón Compartir (📤) abajo en Safari\n\n2. Selecciona "Añadir a pantalla de inicio"\n\n3. Confirma tocando "Añadir"',
+        confirmText: 'Entendido',
+        cancelText: 'Más tarde'
+      });
+    } else {
+      showModal({
+        title: '📲 Instalar la app',
+        message: 'Para instalar:\n\n1. Toca el menú (⋮) del navegador\n\n2. Selecciona "Instalar app" o "Añadir a pantalla de inicio"',
+        confirmText: 'Entendido',
+        cancelText: 'Más tarde'
+      });
+    }
+  }
+
+  function dismissInstallBanner() {
+    hideInstallBanner();
+    localStorage.setItem(INSTALL_DISMISSED_KEY, 'true');
+  }
+
+  function setupInstallPrompt() {
+    // Solo funciona en Android/Chrome y navegadores compatibles
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+      // Mostrar el banner después de 2 segundos
+      setTimeout(showInstallBanner, 2000);
+    });
+
+    // Cuando la app se instala exitosamente
+    window.addEventListener('appinstalled', () => {
+      hideInstallBanner();
+      deferredInstallPrompt = null;
+      localStorage.setItem(INSTALL_DISMISSED_KEY, 'true');
+    });
+
+    // En iOS Safari, no hay beforeinstallprompt. Mostrar banner después de 3s
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    if (isIOS && !isAppInstalled()) {
+      setTimeout(showInstallBanner, 3000);
+    }
+
+    // Listeners de los botones del banner
+    const installBtn = document.getElementById('installBtn');
+    const installClose = document.getElementById('installClose');
+    if (installBtn) {
+      installBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        handleInstallClick();
+      });
+    }
+    if (installClose) {
+      installClose.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dismissInstallBanner();
+      });
+    }
+  }
+
   // ===== Init =====
   function init() {
     applySettings();
     setupGlobalListeners();
+    setupInstallPrompt();
     if (state.initialized) {
       ensureCurrentWeek();
       showScreen('home');
