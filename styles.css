@@ -2181,3 +2181,122 @@ select {
   border-color: var(--accent-1);
   color: var(--accent-1);
 }
+
+/* =============================================
+   BANNER DE INSTALACIÓN (PWA)
+   ============================================= */
+
+.install-banner {
+  position: fixed;
+  top: calc(var(--safe-top) + 70px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-3) var(--s-4);
+  background: linear-gradient(135deg, var(--accent-2), var(--accent-4));
+  border-radius: var(--r-full);
+  box-shadow: 0 12px 32px var(--accent-shadow), 0 4px 16px rgba(0, 0, 0, 0.3);
+  z-index: 50;
+  max-width: calc(100% - 32px);
+  width: fit-content;
+  animation: slideDownBanner 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.install-banner.hidden {
+  display: none;
+}
+
+@keyframes slideDownBanner {
+  from { opacity: 0; transform: translateX(-50%) translateY(-30px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.install-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.install-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.install-title {
+  font-weight: 700;
+  color: white;
+  font-size: 0.9375rem;
+  line-height: 1.2;
+}
+
+.install-subtitle {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.75rem;
+  margin-top: 2px;
+}
+
+.install-btn {
+  padding: var(--s-2) var(--s-4);
+  background: white;
+  color: var(--accent-3);
+  border-radius: var(--r-full);
+  font-weight: 700;
+  font-size: 0.8125rem;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.install-btn:hover, .install-btn:active {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.install-close {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  background: transparent;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.install-close:hover, .install-close:active {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+}
+
+.install-close svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* =============================================
+   BUDGET CARD STICKY (para que no se tape con gastos)
+   ============================================= */
+
+.home-content .budget-card {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: rgba(15, 8, 8, 0.95);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+}
+
+/* Compactar gastos cuando hay muchos */
+.expense-item {
+  padding: calc(var(--s-2) * 1.2) var(--s-4);
+}
+
+.expense-icon {
+  width: 40px;
+  height: 40px;
+  font-size: 1.25rem;
+}
