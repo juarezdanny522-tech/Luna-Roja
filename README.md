@@ -108,6 +108,8 @@ MIT — Puedes usar, modificar y compartir libremente. Solo mantén el crédito 
 ## 🙏 Contribuir
 
 ¿Encontraste un bug? ¿Tienes una idea? ¡Abre un issue o haz un pull request!
+Escribeme a mi Whatsapp para cualquier duda o sugerencia, estare encantado de conocer tus ambiciones
+📷 Whatsapp: +503 7480-7084
 
 ---
 
